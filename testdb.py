@@ -1,28 +1,39 @@
-
-
+from dotenv import load_dotenv 
 from sqlalchemy import create_engine, text
+import os
 
-USER = "postgres"
-PASS = "12345678"
-HOST = "localhost"
-PORT = "5432"
-DB   = "sistema_ventas"
+load_dotenv()
+
+
+USER = os.getenv('USER')
+PASS = os.getenv('PASS')
+HOST = os.getenv('HOST')
+PORT = os.getenv('PORT')
+DB   = os.getenv('DB')
 
 
 url_conexion = f"postgresql+psycopg://{USER}:{PASS}@{HOST}:{PORT}/{DB}"
 
-
 engine = create_engine(url_conexion)
+
+sql = """SELECT 
+	categorias.nombre AS categoria, 
+	SUM(productos.stock) AS stock_total
+FROM productos
+JOIN categorias ON productos.categoria_id = categorias.categoria_id
+GROUP BY categorias.nombre
+ORDER BY stock_total DESC;
+"""
 
 with engine.connect() as conn:
     
-    query = text("SELECT * FROM productos")
+    query = text(sql)
     
     result = conn.execute(query)
     
-    for producto in result:
+    for stock in result:
         
-        print(producto.nombre)
+        print(stock.categoria, stock.stock_total)
 
 
 '''
