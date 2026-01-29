@@ -36,6 +36,8 @@ with engine.connect() as conn:
         print(stock.categoria, stock.stock_total)
 
 
+
+
 '''
 conn = engine.connect()
 
